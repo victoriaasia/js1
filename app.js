@@ -4,7 +4,7 @@ function start() {
 }
 
 
-
+// Hello from Stas
 function totalSum() {
     var sum = 0;
         
