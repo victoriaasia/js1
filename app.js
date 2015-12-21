@@ -6,7 +6,9 @@ function start() {
  countTypical();
  countOnlyRecommended();
  getRegularClient();
+ makeSearch();
  getCostomers();
+ task_2();
 }
 
 
@@ -138,12 +140,13 @@ function getRegularClient() {
     for(var i = 0; i < regularUsers.length; i++) {
         element = regularUsers[i];
         
-       orders = userOrdersCount.length; //что здесь писать, чтобы посчитать сколько раз встречается юзер_айди? то есть сколько покупок он совершил?..
-       
+        orders = findByUser(element, ordersList);
         
-        html += '<tr><td>' + element + '</td><td>' + orders + '</td></tr>';
-    }
-
+        //можно ли как-то отсортировать таблицу по убыванию - чтобы вверху были те покупатели, у которых наибольшее количество покупок, и далее.... ?
+        
+        html += '<tr><td>' + element + '</td><td>' + orders.length + '</td></tr>';
+        }
+    orders.sort();
     document.getElementById('regular-users').innerHTML = html;
 };
 
@@ -152,28 +155,123 @@ function getRegularClient() {
 
 
 function task_2() {
-    var startDate = new Date(2015, 05, 26);
-    var endDate = new Date(2015, 05, 28, 23, 59, 59);
+    var startDate = new Date(2015, 5, 26, 0, 0, 0);
+    var endDate = new Date(2015, 5, 28, 23, 59, 59);
+    var list = filterByDate(ordersList, startDate, endDate);
+    document.getElementById('period-sum').innerHTML = sum(list) + ' руб.';
+    document.getElementById('period-total').innerHTML = list.length;
+    document.getElementById('period-customers').innerHTML = getUsers(list).length;
+    //document.getElementById('period-recommended').innerHTML = sum(list, 'recommended') + ' руб.'; как посчитать количество продаж за период... ?
+};
     
-    var sumPeriod = 0;
-    //var list = [];
-    
-    // нужно как-то сравнить даты....
-        for(var i=0; i < ordersList.length; i++){
-       if(startDate < ordersList.timestamp * 1000 < endDate) {
-         sumPeriod += ordersList[i].total;  
-           
-       }
-    }   
-    
-    
-    
-    
-    document.getElementById('period-sum').innerHTML = sumPeriod + ' руб.';
-    //document.getElementById('period-total').innerHTML = list.length;
-    //document.getElementById('period-customers').innerHTML = getUsers(list).length;
-    //document.getElementById('period-recommended').innerHTML = sum(list, 'recommended') + ' руб.';
+
+
+
+
+function makeSearch() {
+    document.getElementById('search-button').addEventListener('click', function() {
+        var value = document.getElementById('search-field').value;
+        if(value != '') {
+            if(parseInt(value) != value) {
+                alert('Введите ID покупателя!');
+            } else {
+                var orders = findByUser(value, ordersList);
+                var html = '';
+                var date;
+                for(var i = 0; i < orders.length; i++) {
+                    order = orders[i];
+                date = new Date(order.timestamp * 1000);
+                var dd = date.getDate();
+                if (dd < 10) dd = '0' + dd;
+                var mm = date.getMonth() + 1;
+                if (mm < 10) mm = '0' + mm;
+                var yy = date.getFullYear() % 100;
+                if (yy < 10) yy = '0' + yy;
+                    
+                    
+                    
+                    
+                    html += '<tr><td>' + dd + '.' + mm + '.' + yy + '</td><td>' + order.id + '</td><td>' + order.total + ' руб.</td><td>' + order.typical + ' руб.</td><td>' + order.recommended + ' руб.</td></tr>';
+                }
+                document.getElementById('orders-by-user').innerHTML = html;
+            }
+        }
+    })
 }
+
+
+
+
+function findByUser(user, elements) {
+    var filtered = [];
+    for(var i = 0; i < elements.length; i++) {
+        if(elements[i].user_id == user) {
+            filtered.push(elements[i]);
+        }
+    }
+    return filtered;
+}
+
+function sum(elements, filter) {
+    var sum = 0;
+    for(var i = 0; i < elements.length; i++) {
+        if( filter == 'typical' ) {
+            sum += elements[i].typical;
+        }
+        if( filter == 'recommended' ) {
+            sum += elements[i].recommended;
+        }
+        if( filter == null ) {
+            sum += elements[i].total;
+        }
+    }
+    return sum;
+}
+
+function getUsers(elements) {
+    var list = [];
+    for(var i = 0; i < elements.length; i++) {
+        if(list.indexOf(elements[i].user_id) == -1) {
+            list.push(elements[i].user_id);
+        }
+    }
+    return list;
+}
+
+function filterOnlyTypical(elements) {
+    var filtered = [];
+    for(var i = 0; i < elements.length; i++) {
+        if(elements[i].recommended == 0) {
+            filtered.push(elements[i]);
+        }
+    }
+    return filtered;
+}
+
+function filterOnlyRecommended(elements) {
+    var filtered = [];
+    for(var i = 0; i < elements.length; i++) {
+        if(elements[i].typical == 0) {
+            filtered.push(elements[i]);
+        }
+    }
+    return filtered;
+}
+
+function filterByDate(elements, from, to) {
+    var filtered = [];
+    var from_i =  from.valueOf() / 1000;
+    var to_i =  to.valueOf() / 1000;
+    for(var i = 0; i < elements.length; i++) {
+        if(elements[i].timestamp >= from_i && elements[i].timestamp <= to_i) {
+            filtered.push(elements[i]);
+        }
+    }
+    return filtered;
+};
+
+
+
 
 
 
