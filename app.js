@@ -138,8 +138,8 @@ function getRegularClient() {
     for(var i = 0; i < regularUsers.length; i++) {
         element = regularUsers[i];
         
-       orders = userOrdersCount.length; 
-       //ЧТО ЗДЕСЬ ПИСАТЬ, ЧТОБЫ ПОСЧИТАТЬ СКОЛЬКО РАЗ ЮЗЕР_АЙДИ ВСТРЕЧАЕТСЯ? ТО ЕСТЬ, СКОЛЬКО РАЗ СОВЕРШИЛ ПОКУПКУ?
+       orders = userOrdersCount.length; //что здесь писать, чтобы посчитать сколько раз встречается юзер_айди? то есть сколько покупок он совершил?..
+       
         
         html += '<tr><td>' + element + '</td><td>' + orders + '</td></tr>';
     }
@@ -156,18 +156,16 @@ function task_2() {
     var endDate = new Date(2015, 05, 28, 23, 59, 59);
     
     var sumPeriod = 0;
-    
     //var list = [];
     
-    // как сравнивать даты?? 
-    
-    for(var i=0; i < ordersList.length; i++){
+    // нужно как-то сравнить даты....
+        for(var i=0; i < ordersList.length; i++){
        if(startDate < ordersList.timestamp * 1000 < endDate) {
          sumPeriod += ordersList[i].total;  
            
        }
     }   
-    //здесь нужна какая-то функция.... ? 
+    
     
     
     
